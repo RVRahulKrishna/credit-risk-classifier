@@ -92,3 +92,21 @@ def evaluate_pipeline(model, X: pd.DataFrame, y) -> tuple[dict, np.ndarray, np.n
     y_pred = model.predict(X)
     y_score = positive_scores(model, X)
     return compute_metrics(y, y_pred, y_score), y_pred, y_score, confusion_matrix(y, y_pred)
+
+def validate_upload(df: pd.DataFrame) -> list[str]:
+    """Return a list of human-readable problems with an uploaded CSV (empty = OK)."""
+    problems = []
+    missing = [c for c in REQUIRED_COLS if c not in df.columns]
+    if missing:
+        problems.append(f"Missing required column(s): {', '.join(missing)}")
+        return problems
+    if df[REQUIRED_COLS].isna().any().any():
+        bad = df[REQUIRED_COLS].columns[df[REQUIRED_COLS].isna().any()].tolist()
+        problems.append(f"Null values found in: {', '.join(bad)}")
+    if not set(df[TARGET_COL].dropna().unique()).issubset({0, 1}):
+        problems.append(f"'{TARGET_COL}' must contain only 0 and 1.")
+    elif df[TARGET_COL].nunique() < 2:
+        problems.append(
+            f"'{TARGET_COL}' has a single class; AUC/MCC need both 0 and 1 present."
+        )
+    return problems
