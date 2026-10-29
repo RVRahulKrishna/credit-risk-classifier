@@ -174,3 +174,31 @@ else:
         )
         st.caption("Green = best value per metric.")
         st.pyplot(plot_roc(curves), clear_figure=True)
+
+# About the Project
+with tab_about:
+    st.markdown(
+        """
+**Task** – binary classification: will a loan applicant default (`loan_default = 1`)?
+
+**Data** – UCI Statlog (German Credit Data): 1,000 applicants, 20 features
+(7 numeric, 13 categorical). Positive class (default) is 30 % of rows.
+The bundled `test_data.csv` is the stratified 20 % hold-out (200 rows) that none of
+the models saw during training or hyper-parameter search.
+
+**Pipelines** – every model file contains the full preprocessing
+(standard scaling + one-hot encoding) followed by the classifier, so any CSV with the
+raw columns can be scored directly.
+        """
+    )
+    st.markdown("**Tuned hyper-parameters & cross-validated AUC (training split only)**")
+    rep = load_training_report()
+    st.dataframe(
+        pd.DataFrame(
+            {
+                "Best parameters": {k: str(v["best_params"]) for k, v in rep.items()},
+                "5-fold CV AUC": {k: v["cv_auc_train"] for k, v in rep.items()},
+            }
+        ),
+        width="stretch",
+    )
