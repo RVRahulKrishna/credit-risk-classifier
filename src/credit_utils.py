@@ -14,3 +14,11 @@ from sklearn.metrics import (
     recall_score,
     roc_auc_score,
 )
+
+# Constant paths for feature names and paths
+ROOT_DIR = Path(__file__).resolve().parent.parent
+MODEL_DIR = ROOT_DIR / "model"
+DATA_DIR = ROOT_DIR / "data"
+RAW_DATA_PATH = DATA_DIR / "german_credit_raw.csv"
+TEST_DATA_PATH = ROOT_DIR / "test_data.csv"
+METRICS_PATH = MODEL_DIR / "metrics.json"
