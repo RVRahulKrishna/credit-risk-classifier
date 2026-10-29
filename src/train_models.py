@@ -124,5 +124,46 @@ def model_zoo() -> dict[str, tuple[Pipeline, dict]]:
         ),
     }
 
+# Main function to load data, train models, and save metrics
+def main() -> None:
+    MODEL_DIR.mkdir(exist_ok=True)
+    df = load_and_prepare()
+    print(f"Loaded {df.shape[0]} rows x {len(FEATURE_COLS)} features | "
+          f"default rate = {df[TARGET_COL].mean():.1%}")
+
+    train_df, test_df = train_test_split(
+        df, test_size=TEST_SIZE, stratify=df[TARGET_COL], random_state=SEED
+    )
+    test_df.to_csv(TEST_DATA_PATH, index=False)
+    X_train, y_train = train_df[FEATURE_COLS], train_df[TARGET_COL]
+    X_test, y_test = test_df[FEATURE_COLS], test_df[TARGET_COL]
+    print(f"Train: {len(train_df)} rows | Test: {len(test_df)} rows -> {TEST_DATA_PATH.name}")
+
+    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=SEED)
+    report: dict[str, dict] = {}
+
+    for name, (pipe, grid) in model_zoo().items():
+        t0 = time.time()
+        search = GridSearchCV(pipe, grid, scoring="roc_auc", cv=cv, n_jobs=-1, refit=True)
+        search.fit(X_train, y_train)
+        best = search.best_estimator_
+
+        metrics, *_ = evaluate_pipeline(best, X_test, y_test)
+        joblib.dump(best, MODEL_DIR / f"{MODEL_FILES[name]}.joblib", compress=3)
+
+        report[name] = {
+            "metrics": {k: round(float(v), 4) for k, v in metrics.items()},
+            "best_params": {k.replace("clf__", ""): v for k, v in search.best_params_.items()},
+            "cv_auc_train": round(float(search.best_score_), 4),
+        }
+        print(f"[{name:<22}] cv-AUC={search.best_score_:.3f} | "
+              + " ".join(f"{k}={v:.3f}" for k, v in metrics.items())
+              + f" | {time.time() - t0:.1f}s")
+
+    with open(METRICS_PATH, "w") as fh:
+        json.dump(report, fh, indent=2, default=str)
+    print(f"\nSaved models to {MODEL_DIR}/ and metrics to {METRICS_PATH.name}")
+
+# Main function call
 if __name__ == "__main__":
     main()
