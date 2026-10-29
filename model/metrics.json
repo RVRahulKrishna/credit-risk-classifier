@@ -2,7 +2,7 @@
   "Logistic Regression": {
     "metrics": {
       "Accuracy": 0.785,
-      "AUC": 0.8155,
+      "AUC": 0.8154,
       "Precision": 0.6735,
       "Recall": 0.55,
       "F1": 0.6055,
@@ -16,19 +16,19 @@
   },
   "Decision Tree": {
     "metrics": {
-      "Accuracy": 0.695,
-      "AUC": 0.7516,
-      "Precision": 0.4947,
-      "Recall": 0.7833,
-      "F1": 0.6065,
-      "MCC": 0.4042
+      "Accuracy": 0.69,
+      "AUC": 0.7514,
+      "Precision": 0.4894,
+      "Recall": 0.7667,
+      "F1": 0.5974,
+      "MCC": 0.3891
     },
     "best_params": {
       "class_weight": "balanced",
       "max_depth": 8,
-      "min_samples_leaf": 5
+      "min_samples_leaf": 20
     },
-    "cv_auc_train": 0.7129
+    "cv_auc_train": 0.7127
   },
   "KNN": {
     "metrics": {
