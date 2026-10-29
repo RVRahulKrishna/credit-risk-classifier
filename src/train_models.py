@@ -31,3 +31,15 @@ from src.credit_utils import (
 
 SEED = 2026
 TEST_SIZE = 0.20
+
+# Load and prepare the data
+def load_and_prepare() -> pd.DataFrame:
+    raw = pd.read_csv(RAW_DATA_PATH)
+    df = raw.rename(columns={"default": TARGET_COL}).copy()
+    # Original coding: 1 = good credit, 2 = bad credit  ->  0 / 1 (1 = default)
+    df[TARGET_COL] = (df[TARGET_COL] == 2).astype(int)
+    # Keep only the schema columns, in a fixed order.
+    return df[FEATURE_COLS + [TARGET_COL]]
+
+if __name__ == "__main__":
+    main()
