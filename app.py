@@ -74,6 +74,21 @@ def plot_roc(curves: dict[str, tuple]):
     fig.tight_layout()
     return fig
 
+# Sidebar controls
+st.sidebar.header("⚙️ Controls")
+model_name = st.sidebar.selectbox("Choose a model", list(MODEL_FILES), index=0)
+
+uploaded = st.sidebar.file_uploader("Upload test CSV", type="csv",
+                                    help="Must contain all 20 feature columns plus `loan_default`.")
+use_sample = st.sidebar.checkbox("Use bundled test_data.csv", value=uploaded is None,
+                                 disabled=uploaded is not None)
+
+if TEST_DATA_PATH.exists():
+    st.sidebar.download_button("⬇️ Download sample test_data.csv", TEST_DATA_PATH.read_bytes(),
+                               file_name="test_data.csv", mime="text/csv")
+
+with st.sidebar.expander("Expected columns"):
+    st.code(", ".join(REQUIRED_COLS), language="text")
 
 # Main app
 st.title("🏦 Credit Default Risk — Classifier Explorer")
