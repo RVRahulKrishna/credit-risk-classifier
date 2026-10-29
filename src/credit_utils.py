@@ -69,3 +69,26 @@ MODEL_FILES = {
 
 # Constants for metric order
 METRIC_ORDER = ["Accuracy", "AUC", "Precision", "Recall", "F1", "MCC"]
+
+def compute_metrics(y_true, y_pred, y_score) -> dict[str, float]:
+    """Return the six assignment metrics (positive class = 1 = default)."""
+    return {
+        "Accuracy": accuracy_score(y_true, y_pred),
+        "AUC": roc_auc_score(y_true, y_score),
+        "Precision": precision_score(y_true, y_pred, zero_division=0),
+        "Recall": recall_score(y_true, y_pred, zero_division=0),
+        "F1": f1_score(y_true, y_pred, zero_division=0),
+        "MCC": matthews_corrcoef(y_true, y_pred),
+    }
+
+def positive_scores(model, X: pd.DataFrame) -> np.ndarray:
+    """Probability of the positive class (falls back to decision_function)."""
+    if hasattr(model, "predict_proba"):
+        return model.predict_proba(X)[:, 1]
+    return model.decision_function(X)
+
+def evaluate_pipeline(model, X: pd.DataFrame, y) -> tuple[dict, np.ndarray, np.ndarray, np.ndarray]:
+    """Score a *fitted* pipeline on (X, y) without refitting anything."""
+    y_pred = model.predict(X)
+    y_score = positive_scores(model, X)
+    return compute_metrics(y, y_pred, y_score), y_pred, y_score, confusion_matrix(y, y_pred)
