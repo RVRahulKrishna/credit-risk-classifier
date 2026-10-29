@@ -55,5 +55,74 @@ def make_preprocessor(scale_numeric: bool = True) -> ColumnTransformer:
         ]
     )
 
+# Dictionary that returns in-scope models and their hyperparameter grids
+def model_zoo() -> dict[str, tuple[Pipeline, dict]]:
+    """name -> (pipeline, hyper-parameter grid)."""
+    return {
+        "Logistic Regression": (
+            Pipeline(
+                [
+                    ("prep", make_preprocessor()),
+                    ("clf", LogisticRegression(max_iter=5000, random_state=SEED)),
+                ]
+            ),
+            {
+                "clf__C": [0.01, 0.1, 1, 10],
+                "clf__class_weight": [None, "balanced"],
+            },
+        ),
+        "Decision Tree": (
+            Pipeline(
+                [
+                    ("prep", make_preprocessor(scale_numeric=False)),
+                    ("clf", DecisionTreeClassifier(random_state=SEED)),
+                ]
+            ),
+            {
+                "clf__max_depth": [3, 4, 5, 6, 8],
+                "clf__min_samples_leaf": [5, 10, 20],
+                "clf__class_weight": [None, "balanced"],
+            },
+        ),
+        "KNN": (
+            Pipeline(
+                [
+                    ("prep", make_preprocessor()),
+                    ("clf", KNeighborsClassifier()),
+                ]
+            ),
+            {
+                "clf__n_neighbors": [5, 9, 15, 25, 35],
+                "clf__weights": ["uniform", "distance"],
+                "clf__p": [1, 2],
+            },
+        ),
+        "Naive Bayes": (
+            Pipeline(
+                [
+                    ("prep", make_preprocessor()),
+                    ("clf", GaussianNB()),
+                ]
+            ),
+            {"clf__var_smoothing": [1e-9, 1e-6, 1e-3, 1e-2, 1e-1]},
+        ),
+        "Support Vector Machine": (
+            Pipeline(
+                [
+                    ("prep", make_preprocessor()),
+                    (
+                        "clf",
+                        SVC(kernel="rbf", probability=True, random_state=SEED),
+                    ),
+                ]
+            ),
+            {
+                "clf__C": [0.5, 1, 5, 10],
+                "clf__gamma": ["scale", 0.01, 0.005],
+                "clf__class_weight": [None, "balanced"],
+            },
+        ),
+    }
+
 if __name__ == "__main__":
     main()
