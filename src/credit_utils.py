@@ -57,3 +57,15 @@ CATEGORICAL_FEATURES = [
 # Constants for all feature columns and required columns
 FEATURE_COLS = NUMERIC_FEATURES + CATEGORICAL_FEATURES
 REQUIRED_COLS = FEATURE_COLS + [TARGET_COL]
+
+# Display name file stem of the saved pipeline in model/
+MODEL_FILES = {
+    "Logistic Regression": "logistic_regression",
+    "Decision Tree": "decision_tree",
+    "KNN": "knn",
+    "Naive Bayes": "naive_bayes",
+    "Support Vector Machine": "svm",
+}
+
+# Constants for metric order
+METRIC_ORDER = ["Accuracy", "AUC", "Precision", "Recall", "F1", "MCC"]
