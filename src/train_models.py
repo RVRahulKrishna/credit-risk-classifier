@@ -41,5 +41,19 @@ def load_and_prepare() -> pd.DataFrame:
     # Keep only the schema columns, in a fixed order.
     return df[FEATURE_COLS + [TARGET_COL]]
 
+# Preprocessor function to scale numeric features and one-hot encode categorical features
+def make_preprocessor(scale_numeric: bool = True) -> ColumnTransformer:
+    num_step = StandardScaler() if scale_numeric else "passthrough"
+    return ColumnTransformer(
+        transformers=[
+            ("num", num_step, NUMERIC_FEATURES),
+            (
+                "cat",
+                OneHotEncoder(handle_unknown="ignore", sparse_output=False),
+                CATEGORICAL_FEATURES,
+            ),
+        ]
+    )
+
 if __name__ == "__main__":
     main()
