@@ -4,9 +4,6 @@ An end-to-end machine-learning project: five classifiers trained on the UCI Stat
 *German Credit* data, evaluated with six metrics, and served through an interactive
 Streamlit app that scores an uploaded test CSV **without retraining**.
 
-- **GitHub repository:** `https://github.com/RVRahulKrishna/credit-risk-classifier`
-- **Live Streamlit app:** `<>`
-
 ---
 
 ## 1. Problem statement
@@ -37,6 +34,11 @@ performance on the minority (default) class far better than accuracy alone.
 - Hyper-parameters tuned with `GridSearchCV` (5-fold stratified CV, scoring = ROC-AUC) on the **training split only**. The test split is used once, for the final report.
 - Positive class for precision / recall / F1 / MCC is **default (1)**.
 
+## 3. Necessary links
+
+- **GitHub repository:** `https://github.com/RVRahulKrishna/credit-risk-classifier`
+- **Live Streamlit app:** `https://credit-risk-ml-classifier.streamlit.app/`
+
 **Repository layout**
 
 ```
@@ -55,7 +57,7 @@ credit-risk-classifier/
 |-- tests/test_pipeline.py  # smoke tests
 ```
 
-## 3. Models used
+## 4. Models used
 
 All five models were trained on the same split and evaluated on the same 200-row hold-out set.
 
@@ -98,25 +100,14 @@ Confusion-matrix counts on the hold-out set (positive = default; 60 defaulters, 
 | Support Vector Machine | Best AUC (0.826) and best F1 (0.628), and the highest recall of all (0.817, 49 of 60 defaulters caught) thanks to `class_weight="balanced"`. The price is lower precision (0.510) and accuracy (0.710) because 47 good customers are flagged. Best choice when missing a defaulter is much costlier than rejecting a good applicant. Slowest to tune. |
 | **Overall, Winner for your dataset?** | **Logistic Regression** is the best all-round model: top accuracy, precision and MCC (the metric that is most robust to class imbalance) and second-best AUC, while remaining simple, fast and interpretable. **SVM** is the runner-up and the better pick if recall on defaulters is the priority (best AUC, F1 and recall). **KNN** is clearly the worst fit. Caveat: the hold-out has only 200 rows (60 positives), so differences of about 0.01-0.02 AUC between LR, SVM, NB and KNN are within sampling noise. |
 
-## 4. Streamlit application
-
-Features (all required items covered):
-
-1. **CSV upload** (sidebar) - upload the test set; a bundled-sample checkbox and a download button for `test_data.csv` are also provided. Uploads are validated (missing columns, nulls, non-binary target, single-class target) with clear error messages.
-2. **Model-selection dropdown** - choose any of the five saved models.
-3. **Evaluation metrics** - Accuracy, AUC, Precision, Recall, F1, MCC shown as metric cards.
-4. **Confusion matrix + classification report** (plus ROC curve and downloadable predictions).
-5. **Compare all models** tab - side-by-side metric table (best value per column highlighted) and combined ROC chart on the uploaded data.
-6. **About** tab - dataset notes and tuned hyper-parameters.
-
-The app loads `model/*.joblib` and only calls `predict` / `predict_proba`; **nothing is retrained**.
-
 ## 5. How to run locally
 
 ```bash
 git clone https://github.com/RVRahulKrishna/credit-risk-classifier.git
 cd credit-risk-classifier
-python -m venv .venv && source .venv/Scripts/activate # for windows
+
+# for windows
+python -m venv .venv && source .venv/Scripts/activate
 python -m pip install -r requirements.txt
 
 # (optional) retrain everything - reproducible, regenerates model/ and test_data.csv
@@ -125,20 +116,8 @@ python -m src.train_models
 # (optional) smoke tests
 python -m tests.test_pipeline
 
-# launch the app
+# launch the streamlit app
 python -m streamlit run app.py
 ```
 
 Then upload `test_data.csv` in the sidebar (or tick *Use bundled test_data.csv*).
-
-## 6. Deploy on Streamlit Community Cloud
-
-1. Push this folder to a public GitHub repository (branch `main`).
-2. Go to <https://streamlit.io/cloud> and sign in with GitHub.
-3. Click **New app**, choose the repository, branch `main`, main file `app.py`.
-4. Click **Deploy** and the corresponding URL is pasted at the top of this README.
-
-## 7. Reproducibility
-
-Seeds are fixed (`SEED = 2026`). Re-running `python -m src.train_models` on the same
-library versions reproduces the numbers in the tables above.
