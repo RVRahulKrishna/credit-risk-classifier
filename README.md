@@ -79,7 +79,7 @@ Selected hyper-parameters (from CV on the training split):
 | Naive Bayes | `{'var_smoothing': 0.1}` | 0.786 |
 | Support Vector Machine | `{'C': 1, 'class_weight': 'balanced', 'gamma': 0.01}` | 0.782 |
 
-### Observations on model performance
+## 5. Observations on model performance
 
 Confusion-matrix counts on the hold-out set (positive = default; 60 defaulters, 140 good):
 
@@ -100,7 +100,7 @@ Confusion-matrix counts on the hold-out set (positive = default; 60 defaulters, 
 | Support Vector Machine | Best AUC (0.826) and best F1 (0.628), and the highest recall of all (0.817, 49 of 60 defaulters caught) thanks to `class_weight="balanced"`. The price is lower precision (0.510) and accuracy (0.710) because 47 good customers are flagged. Best choice when missing a defaulter is much costlier than rejecting a good applicant. Slowest to tune. |
 | **Overall, Winner for your dataset?** | **Logistic Regression** is the best all-round model: top accuracy, precision and MCC (the metric that is most robust to class imbalance) and second-best AUC, while remaining simple, fast and interpretable. **SVM** is the runner-up and the better pick if recall on defaulters is the priority (best AUC, F1 and recall). **KNN** is clearly the worst fit. Caveat: the hold-out has only 200 rows (60 positives), so differences of about 0.01-0.02 AUC between LR, SVM, NB and KNN are within sampling noise. |
 
-## 5. How to run locally
+## 6. How to run locally
 
 ```bash
 git clone https://github.com/RVRahulKrishna/credit-risk-classifier.git
